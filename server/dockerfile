@@ -1,0 +1,5 @@
+FROM openjdk:17-alpine   
+ADD target/server-0.0.1.jar server.jar
+WORKDIR /app 
+COPY target/server-0.0.1.jar /app/server.jar     
+ENTRYPOINT ["java", "-jar", "/server.jar"]

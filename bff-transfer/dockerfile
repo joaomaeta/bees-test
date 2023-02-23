@@ -1,0 +1,5 @@
+FROM openjdk:17-alpine   
+ADD target/bff-transfer-0.0.1.jar bff-transfer.jar
+WORKDIR /app 
+COPY target/bff-transfer-0.0.1.jar /app/bff-transfer.jar     
+ENTRYPOINT ["java", "-jar", "/bff-transfer.jar"]

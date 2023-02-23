@@ -1,0 +1,5 @@
+FROM openjdk:17-alpine   
+ADD target/transfer-ms-0.0.1.jar transfer-ms.jar
+WORKDIR /app 
+COPY target/transfer-ms-0.0.1.jar /app/transfer-ms.jar     
+ENTRYPOINT ["java", "-jar", "/transfer-ms.jar"]

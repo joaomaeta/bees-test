@@ -1,0 +1,112 @@
+version: "3.6"
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.10-management
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    restart: always
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ./dados:/var/lib/rabbitmq/
+    environment:
+        - RABBITMQ_DEFAULT_USER=bees
+        - RABBITMQ_DEFAULT_PASS=bees
+  
+  server:
+    container_name: server
+    build:
+      dockerfile: dockerfile
+      context: ../server
+    image: server
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    restart: always
+    ports:
+        - 8081:8081
+  
+  gateway:
+    build:
+      dockerfile: dockerfile
+      context: ../gateway
+    image: gateway
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    restart: always
+    environment:
+      - eureka.client.service-url.defaultZone=http://server:8081/eureka
+    depends_on:
+      - server
+    ports:
+      - 8082:8082
+
+  bff-transfer:
+    build:
+      dockerfile: dockerfile
+      context: ../bff-transfer
+    image: bff-transfer
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    restart: always
+    depends_on:
+      - server
+      - gateway
+      - rabbitmq
+    ports:
+      - "8000"
+
+  transfer-ms:
+    build:
+      dockerfile: dockerfile
+      context: ../transfer-service
+    image: transfer-ms
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    restart: always
+    depends_on:
+      - server
+      - gateway
+      - rabbitmq
+    ports:
+      - "8000"
+
+  notification:
+    build:
+      dockerfile: dockerfile
+      context: ../notification
+    image: notification
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    restart: always
+    depends_on:
+      - server
+      - gateway
+      - rabbitmq
+    ports:
+      - "8000"

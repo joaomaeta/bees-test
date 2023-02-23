@@ -1,0 +1,5 @@
+FROM openjdk:17-alpine
+ADD target/gateway-0.0.1.jar gateway.jar
+WORKDIR /app 
+COPY target/gateway-0.0.1.jar /app/gateway.jar     
+ENTRYPOINT ["java", "-jar", "/gateway.jar"]

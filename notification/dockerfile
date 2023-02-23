@@ -1,0 +1,5 @@
+FROM openjdk:17-alpine   
+ADD target/notification-0.0.1.jar notification.jar
+WORKDIR /app 
+COPY target/notification-0.0.1.jar /app/notification.jar     
+ENTRYPOINT ["java", "-jar", "/notification.jar"]
